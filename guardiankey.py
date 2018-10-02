@@ -68,7 +68,7 @@ def sendevent(username):
 	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	sock.sendto(MESSAGE, ('collector.guardiankey.net', 8888))
 
-def chechaccess(username):
+def checkaccess(username):
 	global GKconfig
 	message = create_message(username)
 	tmpdata = {}
