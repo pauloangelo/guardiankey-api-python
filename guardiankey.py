@@ -3,6 +3,7 @@ import hashlib
 import base64
 import time
 import socket
+import requests
 from Crypto.Cipher import AES
 
 # Please run register.py for generate your configuration
