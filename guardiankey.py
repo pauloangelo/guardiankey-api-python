@@ -26,7 +26,7 @@ def getUserAgent():
     UA="Set-me"
     return UA
 
-def create_message(username,loginfailed=0,eventType='Authentication'):
+def create_message(username,userEmail="",loginfailed=0,eventType='Authentication'):
     global GKconfig
     keyb64      = GKconfig['key']
     ivb64         = GKconfig['iv']
@@ -59,21 +59,22 @@ def create_message(username,loginfailed=0,eventType='Authentication'):
         sjson['psychometricTyped'] = ''
         sjson['psychometricImage'] = ''
         sjson['event_type'] = eventType
+        sjson['userEmail'] = userEmail
         message = json.dumps(sjson)
         obj = AES.new(key,AES.MODE_CFB, iv, segment_size=8)
         cryptmessage = base64.b64encode(obj.encrypt(message))
         return cryptmessage
         
-def sendevent(username,loginfailed=0,eventType='Authentication'):
+def sendevent(username,userEmail="",loginfailed=0,eventType='Authentication'):
     global GKconfig
     message = create_message(username,loginfailed,eventType)
     payload = GKconfig['authgroupid']+"|"+message
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(payload, ('collector.guardiankey.net', 8888))
 
-def checkaccess(username,loginfailed=0,eventType='Authentication'):
+def checkaccess(username,userEmail="",loginfailed=0,eventType='Authentication'):
     global GKconfig
-    message = create_message(username,loginfailed,eventType)
+    message = create_message(username,userEmail,loginfailed,eventType)
     tmpdata = {}
     tmpdata['id'] = GKconfig['authgroupid']
     tmpdata['message'] = message
@@ -86,4 +87,5 @@ def checkaccess(username,loginfailed=0,eventType='Authentication'):
         return gkreturn
     except:
         return {"response":"ERROR"}
+
 
