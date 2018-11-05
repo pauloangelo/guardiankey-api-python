@@ -67,7 +67,7 @@ def create_message(username,userEmail="",loginfailed=0,eventType='Authentication
         
 def sendevent(username,userEmail="",loginfailed=0,eventType='Authentication'):
     global GKconfig
-    message = create_message(username,loginfailed,eventType)
+    message = create_message(username,userEmail,loginfailed,eventType)
     payload = GKconfig['authgroupid']+"|"+message
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(payload, ('collector.guardiankey.net', 8888))
