@@ -1,7 +1,8 @@
 import base64
 import os
 import requests
-# from Crypto.Cipher import AES
+import md5
+import json
 
 def register(email):
 	url = 'https://api.guardiankey.io/register'
@@ -28,9 +29,21 @@ hashid,key,iv = register(email)
 
 message = 'Put in your configuration this values:\n\
 		   email: {}\n\
-		   hashid: {}\n\
 		   key: {}\n\
-		   iv: {}\n'
+		   iv: {}\n\
+		   agentid: {}\n\
+                   authgrupid: {}\n\
+                   organizationid: {}\n'
+                   
 
-print message.format(email,hashid,key,iv)
+try:
+    GKIDs = json.loads(hashid)
+    sucess=1
+except ValueError:
+    print hashid
+    sucess=0
+
+if sucess is 1:
+    agentid = md5.new(os.urandom(20)).hexdigest()
+    print message.format(email,key,iv,agentid,GKIDs.get("authGroupId"),GKIDs.get("organizationId"))
 
