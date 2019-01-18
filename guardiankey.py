@@ -4,6 +4,7 @@ import time
 import socket
 import requests
 from Crypto.Cipher import AES
+from _socket import timeout
 
 # Please run register.py for generate your configuration
 GKconfig = {}
@@ -65,12 +66,27 @@ def create_message(username,userEmail="",loginfailed=0,eventType='Authentication
         cryptmessage = base64.b64encode(obj.encrypt(message))
         return cryptmessage
         
-def sendevent(username,userEmail="",loginfailed=0,eventType='Authentication'):
+def sendeventUDP(username,userEmail="",loginfailed=0,eventType='Authentication'):
     global GKconfig
     message = create_message(username,userEmail,loginfailed,eventType)
     payload = GKconfig['authgroupid']+"|"+message
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(payload, ('collector.guardiankey.net', 8888))
+
+def sendevent(username,userEmail="",loginfailed=0,eventType='Authentication'):
+    global GKconfig
+    message = create_message(username,userEmail,loginfailed,eventType)
+    tmpdata = {}
+    tmpdata['id'] = GKconfig['authgroupid']
+    tmpdata['message'] = message
+    data = json.dumps(tmpdata)
+    url = 'https://api.guardiankey.io/sendevent'
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    try:
+        requests.post(url, data=data, headers=headers, timeout=4)
+        return ""
+    except:
+        return ""
 
 def checkaccess(username,userEmail="",loginfailed=0,eventType='Authentication'):
     global GKconfig
@@ -81,8 +97,8 @@ def checkaccess(username,userEmail="",loginfailed=0,eventType='Authentication'):
     data = json.dumps(tmpdata)
     url = 'https://api.guardiankey.io/checkaccess'
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    query = requests.post(url, data=data, headers=headers)
     try:
+        query = requests.post(url, data=data, headers=headers, timeout=4)
         gkreturn = json.loads(query.text)
         return gkreturn
     except:
